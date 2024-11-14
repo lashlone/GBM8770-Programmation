@@ -21,7 +21,7 @@ class MultiScaleLineDetector:
         self.num_orientations = num_orientations
 
         # TODO: 1.2.Q1
-        self.avg_mask = ...
+        self.avg_mask = np.ones((W, W))/(W ** 2.0)
 
         # TODO: 1.2.Q2
         # line_detectors_masks est un dictionnaire contenant les masques de détection de ligne pour toutes les
@@ -31,11 +31,11 @@ class MultiScaleLineDetector:
         self.line_detectors_masks = {}
         for l in L:
             # On calcule le détecteur de ligne initial de taille `l` (les dimensions du masque sont `(l, l)`).
-            line_detector = ...
+            line_detector = np.vstack([np.ones((1, l)) if i == l//2 else np.zeros((1, l)) for i in range(l)]) / l
 
             # On initialise la liste des num_orientations masques de taille lxl.
             line_detectors_masks = [line_detector]
-            for angle in ...:
+            for angle in np.arange(0.0, 180.0, 180.0/num_orientations):
                 # On effectue `num_orientations - 1` rotations du masque `line_detector`.
                 # Pour un angle donné, la rotation sera effectué par
                 r = cv2.getRotationMatrix2D((l // 2, l // 2), angle, 1)
