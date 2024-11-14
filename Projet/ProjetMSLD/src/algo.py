@@ -34,7 +34,7 @@ class MultiScaleLineDetector:
             line_detector = np.vstack([np.ones((1, l)) if i == l//2 else np.zeros((1, l)) for i in range(l)]) / l
 
             # On initialise la liste des num_orientations masques de taille lxl.
-            line_detectors_masks = [line_detector]
+            line_detectors_masks = []
             for angle in np.arange(0.0, 180.0, 180.0/num_orientations):
                 # On effectue `num_orientations - 1` rotations du masque `line_detector`.
                 # Pour un angle donné, la rotation sera effectué par
