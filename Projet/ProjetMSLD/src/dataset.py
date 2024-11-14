@@ -23,14 +23,22 @@ def load_dataset() -> tuple[list[Sample], list[Sample]]:
     train = []
 
     for file in files:
-        # TODO 1.1.Q1 Chargez les arrays `image`, `label` et `mask`:
-        image = ...
-        label = ...
-        mask = ...
+        image = imread(os.path.join("../DRIVE/data/training/", file))
+        label = imread(os.path.join("../DRIVE/label/training/", file))
+        mask = imread(os.path.join("../DRIVE/mask/training/", file))
 
         sample = Sample(name=file, image=image, label=label, mask=mask)
+        train.append(sample)
 
+    files = sorted(os.listdir("../DRIVE/data/test/"))
     test = []
-    # TODO 1.1.Q1 De la même manière, chargez les images de test.
+
+    for file in files:
+        image = imread(os.path.join("../DRIVE/data/test/", file))
+        label = imread(os.path.join("../DRIVE/label/test/", file))
+        mask = imread(os.path.join("../DRIVE/mask/test/", file))
+
+        sample = Sample(name=file, image=image, label=label, mask=mask)
+        test.append(sample)
 
     return train, test
