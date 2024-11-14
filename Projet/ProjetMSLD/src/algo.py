@@ -61,7 +61,7 @@ class MultiScaleLineDetector:
         # self.line_detectors_masks[L]
         line_detector = self.line_detectors_masks[L]
 
-        R = ...
+        R = convolve(grey_lvl, line_detector - self.avg_mask)
 
         return R
 
