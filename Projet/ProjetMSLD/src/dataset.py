@@ -24,8 +24,8 @@ def load_dataset() -> tuple[list[Sample], list[Sample]]:
 
     for file in files:
         image = imread(os.path.join("../DRIVE/data/training/", file))
-        label = imread(os.path.join("../DRIVE/label/training/", file))
-        mask = imread(os.path.join("../DRIVE/mask/training/", file))
+        label = imread(os.path.join("../DRIVE/label/training/", file)).astype(bool)
+        mask = imread(os.path.join("../DRIVE/mask/training/", file)).astype(bool)
 
         sample = Sample(name=file, image=image, label=label, mask=mask)
         train.append(sample)
@@ -35,8 +35,8 @@ def load_dataset() -> tuple[list[Sample], list[Sample]]:
 
     for file in files:
         image = imread(os.path.join("../DRIVE/data/test/", file))
-        label = imread(os.path.join("../DRIVE/label/test/", file))
-        mask = imread(os.path.join("../DRIVE/mask/test/", file))
+        label = imread(os.path.join("../DRIVE/label/test/", file)).astype(bool)
+        mask = imread(os.path.join("../DRIVE/mask/test/", file)).astype(bool)
 
         sample = Sample(name=file, image=image, label=label, mask=mask)
         test.append(sample)

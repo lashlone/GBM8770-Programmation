@@ -62,13 +62,14 @@ class MultiScaleLineDetector:
         line_detector = self.line_detectors_masks[L]
         response = None
 
+        average_img = convolve(grey_lvl, self.avg_mask)
         for mask in line_detector:
-            mask_result = convolve(grey_lvl, line_detector - self.avg_mask)
+            mask_result = convolve(grey_lvl, mask) - average_img
 
-            if response:
-                response = np.maximum(mask_result, response)
-            else:
+            if response is None:
                 response = mask_result
+            else:
+                response = np.maximum(mask_result, response)
 
         norm_response = (response - response.mean())/response.std()
     
@@ -88,8 +89,9 @@ class MultiScaleLineDetector:
         """
         # TODO: 1.3.Q1
         # Pour les hyperparamètres L et W utilisez les valeurs de self.L et self.W.
-
-        Rcombined = ...
+        inverted_img = 1 - image[:,:, 1] # on inverse le canal vert
+        line_response_imgs = [self.basic_line_detector(inverted_img, line_size) for line_size in self.L]
+        Rcombined = (sum(line_response_imgs) + inverted_img)/(len(self.L)+1)
 
         return Rcombined
 
@@ -106,8 +108,9 @@ class MultiScaleLineDetector:
         """
         # TODO: 1.5.Q1
         # Utilisez self.multi_scale_line_detector(image) et threshold.
+        im_RGB=self.multi_scale_line_detector(image)
 
-        vessels = ...
+        vessels = np.where(im_RGB >= threshold, 1, 0)
 
         return vessels
 
@@ -126,9 +129,16 @@ def learn_threshold(msld: MultiScaleLineDetector, dataset: list[Sample]) -> tupl
     fpr, tpr, thresholds = roc(msld, dataset)
 
     # TODO: 1.4.Q3
-    # Utilisez np.argmax pour trouver l'indice du maximum d'un vecteur.
-    threshold = ...
-    accuracy = ...
+    # Utilisez np.argmax pour trouver l'indice du maximum d'un vecteur.¸
+    positive_values = sum([np.sum(d.label) for d in dataset])
+    total_values = sum([np.sum(d.mask) for d in dataset])
+    negative_values = total_values - positive_values
+
+    accuracies = (tpr * positive_values + (1-fpr) * negative_values)/total_values
+    index = np.argmax(accuracies)
+
+    threshold = thresholds[index]
+    accuracy = accuracies[index]
 
     return threshold, accuracy
 
