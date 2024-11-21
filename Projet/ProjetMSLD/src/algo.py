@@ -60,10 +60,20 @@ class MultiScaleLineDetector:
         # Les masques de détections de lignes de longueur L initialisés dans le constructeur sont accessibles par:
         # self.line_detectors_masks[L]
         line_detector = self.line_detectors_masks[L]
+        response = None
 
-        R = convolve(grey_lvl, line_detector - self.avg_mask)
+        for mask in line_detector:
+            mask_result = convolve(grey_lvl, line_detector - self.avg_mask)
 
-        return R
+            if response:
+                response = np.maximum(mask_result, response)
+            else:
+                response = mask_result
+
+        norm_response = (response - response.mean())/response.std()
+    
+
+        return norm_response
 
     def multi_scale_line_detector(self, image: np.ndarray) -> np.ndarray:
         """Applique l'algorithme de Multi-Scale Line Detector et combine les réponses des BLD pour obtenir la carte
