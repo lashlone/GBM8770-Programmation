@@ -66,7 +66,12 @@ def plot_roc(msld: MultiScaleLineDetector, dataset: list[Sample], ax: plt.Axes =
 
     # TODO: 2.3.Q2
     # Utilisez la fonction roc(dataset) déjà implémentée.
+    fpr, tpr, _ = roc(msld, dataset)
 
-    roc_auc = ...
+    ax.plot(fpr, tpr)
+    ax.set_xlabel("Taux de faux positifs")
+    ax.set_ylabel("Taux de vrais positifs")
+
+    roc_auc = auc(fpr, tpr)
 
     return roc_auc

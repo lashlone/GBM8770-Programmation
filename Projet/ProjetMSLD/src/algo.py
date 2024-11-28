@@ -176,10 +176,11 @@ def naive_metrics(msld: MultiScaleLineDetector, dataset: list[Sample], threshold
         global_true_negative += instance_true_negative
         global_false_negative += instance_false_negative
 
-    global_population_size = global_true_positives + global_false_positives + global_true_negative + global_false_negative
+    global_positives = global_true_positives + global_false_positives
+    global_negatives = global_true_negative + global_false_negative
 
-    accuracy = (global_true_positives + global_true_negative)/global_population_size
-    confusion_matrix = np.array([[global_true_positives/global_population_size, global_false_negative/global_population_size], [global_false_positives/global_population_size, global_true_negative/global_population_size]])
+    accuracy = (global_true_positives + global_true_negative)/(global_positives + global_negatives)
+    confusion_matrix = np.array([[global_true_positives/global_positives, global_false_negative/global_negatives], [global_false_positives/global_positives, global_true_negative/global_negatives]])
 
     return accuracy, confusion_matrix
 
@@ -244,8 +245,10 @@ def dice(msld: MultiScaleLineDetector, dataset: list[Sample], threshold: float) 
     # TODO: 2.2.Q2
     # Vous pouvez utiliser la fonction `_dice` fournie tout en bas de ce fichier.
 
-    dice_index = ...
+    targets = np.array([data.label for data in dataset])
+    predictions = np.array([msld.segment_vessels(data.image, threshold) for data in dataset])
 
+    dice_index = _dice(targets, predictions)
     return dice_index
 
 
