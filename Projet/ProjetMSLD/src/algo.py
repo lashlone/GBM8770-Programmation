@@ -108,9 +108,9 @@ class MultiScaleLineDetector:
         """
         # TODO: 1.5.Q1
         # Utilisez self.multi_scale_line_detector(image) et threshold.
-        im_RGB=self.multi_scale_line_detector(image)
+        filtered_img = self.multi_scale_line_detector(image)
 
-        vessels = np.where(im_RGB >= threshold, 1, 0)
+        vessels = np.where(filtered_img >= threshold, 1, 0)
 
         return vessels
 
@@ -158,9 +158,28 @@ def naive_metrics(msld: MultiScaleLineDetector, dataset: list[Sample], threshold
         confusion_matrix (np.ndarray): Matrice de confusion 2 x 2 normalisée par le nombre de labels positifs et négatifs.
     """
     # TODO: 2.1.Q1
+    global_true_positives = 0
+    global_false_positives = 0
+    global_true_negative = 0
+    global_false_negative = 0
 
-    accuracy = ...
-    confusion_matrix = ...
+    for data in dataset:
+        segmented_img = msld.segment_vessels(data.image, threshold)
+    
+        instance_true_positives = np.sum(segmented_img[data.label])
+        instance_false_positives = np.sum(segmented_img[data.mask]) - instance_true_positives
+        instance_false_negative = np.sum(data.label[data.mask]) - instance_true_positives
+        instance_true_negative = np.sum(data.mask) - instance_true_positives - instance_false_positives - instance_false_negative
+    
+        global_true_positives += instance_true_positives
+        global_false_positives += instance_false_positives
+        global_true_negative += instance_true_negative
+        global_false_negative += instance_false_negative
+
+    global_population_size = global_true_positives + global_false_positives + global_true_negative + global_false_negative
+
+    accuracy = (global_true_positives + global_true_negative)/global_population_size
+    confusion_matrix = np.array([[global_true_positives/global_population_size, global_false_negative/global_population_size], [global_false_positives/global_population_size, global_true_negative/global_population_size]])
 
     return accuracy, confusion_matrix
 
