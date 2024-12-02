@@ -62,9 +62,9 @@ class MultiScaleLineDetector:
         line_detector = self.line_detectors_masks[L]
         response = None
 
-        average_img = convolve(grey_lvl, self.avg_mask)
+        average_img = convolve(grey_lvl, self.avg_mask, mode='constant', cval=1.0)
         for mask in line_detector:
-            mask_result = convolve(grey_lvl, mask) - average_img
+            mask_result = convolve(grey_lvl, mask, mode='constant', cval=1.0) - average_img
 
             if response is None:
                 response = mask_result
@@ -73,7 +73,6 @@ class MultiScaleLineDetector:
 
         norm_response = (response - response.mean())/response.std()
     
-
         return norm_response
 
     def multi_scale_line_detector(self, image: np.ndarray) -> np.ndarray:

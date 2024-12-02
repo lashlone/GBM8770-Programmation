@@ -69,6 +69,7 @@ def plot_roc(msld: MultiScaleLineDetector, dataset: list[Sample], ax: plt.Axes =
     fpr, tpr, _ = roc(msld, dataset)
 
     ax.plot(fpr, tpr)
+    ax.plot(np.linspace(0, 1, 20), np.linspace(0, 1, 20), color="black", linestyle="dashed")
     ax.set_xlabel("Taux de faux positifs")
     ax.set_ylabel("Taux de vrais positifs")
 
